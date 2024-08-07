@@ -19,8 +19,19 @@ export default function TabLayout() {
         options={{
           title: 'Scan',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'scan' : 'scan-outline'} color={color} />
+            <TabBarIcon name={focused ? 'scan' : 'scan-outline'} color={color}  />
           ),
+           unmountOnBlur: true,
+        }}
+        />
+        <Tabs.Screen
+        name="send"
+        options={{
+          title: 'Send',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'send' : 'send-outline'} color={color}  />
+          ),
+           //unmountOnBlur: true,
         }}
         />
       <Tabs.Screen

@@ -26,6 +26,9 @@ export default function Scan() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
+  function sendResponse(response) {
+    
+  }
   async function takePic() {
     console.log('tp');
     if ( ref === null ) {
@@ -34,6 +37,9 @@ export default function Scan() {
     }
     const picture = await ref.current.takePictureAsync();
     console.log(picture);
+    console.log(picture.base64);
+    console.log(picture.exif);
+    //fetch(picture.uri).then(response => send_response(response))
   }
 
   return (
