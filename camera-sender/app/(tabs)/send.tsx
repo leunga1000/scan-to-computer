@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Image, Platform, TouchableOpacity, Button } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -8,9 +8,72 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import {SafeAreaView, TextInput} from 'react-native';
 import React from 'react';
+import {useState} from 'react';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+
+
+//import {ImagePickerComponent } from '@/components/ImagePickerComponent';
+import ImagePicker2  from '@/components/ImagePicker2';
 
 export default function ChooseServerScreen() {
     const [text, onChangeText] = React.useState('Useless Text');
+
+
+    const pickDocument = async () => {
+      let result = await DocumentPicker.getDocumentAsync({});
+      console.log(result.uri);
+      console.log(result);
+    };
+
+
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const pickImageAsync = async () => {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        quality: 1,
+        base64: true, // makes the data available too
+        exif: true,
+      });
+  
+      if (!result.canceled) {
+        setSelectedImage(result.assets[0].uri);
+        //console.log(selectedImage);
+        //console.log(result.assets[0]);
+        const headers = {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        };
+        // POST AS JSON TO SERVER
+        //fetch('http://nc.mmkm.net:3000/upj', {method: "POST", headers: headers, body: JSON.stringify(result.assets[0])}).then(resp => console.log(resp))
+        const headersform = {
+          'Access-Control-Allow-Origin': '*',
+          //'Content-Type': 'application/json',
+        };
+        const data = result.assets[0];
+        //FETCH LOCAL URI
+        //fetch(result.assets[0].uri).then(resp => sendData(resp, data)).then(r => console.log(r))
+        //async function sendData(fetch_uri_resp, data) {
+          //const img = await fetch_uri_resp.blob();
+          //console.log(fetch_uri_resp);
+          //console.log();
+          const formData = new FormData();
+          for (const name in data) {
+            //if (name === 'uri') {
+             // continue
+            //};;
+            formData.append(name, data[name]);
+          }
+          //formData.append('filedata', img);
+          console.log('running fetch post ');
+          fetch('http://nc.mmkm.net:3000/up', {method: "POST", headers: headersform, body: formData}).then(resp => console.log(resp))
+        //} 
+
+      } else {
+        alert('You did not select any image.');
+      }
+    };
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -19,12 +82,38 @@ export default function ChooseServerScreen() {
         <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
       <SafeAreaView>
+        
       <TextInput
         style={styles.input}
         onChangeText={onChangeText}
         value={text}
       />
    
+ 
+      <ThemedView style={styles.button}>
+        <TouchableOpacity>
+          
+          <Button
+            title="upload your file"
+            color="black"
+            onPress={pickDocument}
+          />
+        </TouchableOpacity>
+      </ThemedView>
+<ThemedText>&nbsp;</ThemedText>
+      <ThemedView style={styles.button}>
+        <TouchableOpacity>
+          
+          <Button
+            title="upload an image"
+            color="black"
+            onPress={pickImageAsync}
+          />
+        </TouchableOpacity>
+      </ThemedView>
+
+
+
     </SafeAreaView>
 
       <ThemedText>This app includes example code to help you get started.</ThemedText>
